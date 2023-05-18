@@ -1,0 +1,38 @@
+imax *
+jmax *
+kmax *
+---------------
+shapes Hbb      * output.root hist_Hbb_rebin
+shapes Hcc      * output.root hist_Hcc_rebin
+shapes Hss      * output.root hist_Hss_rebin
+shapes Hdd      * output.root hist_Hdd_rebin
+shapes Huu      * output.root hist_Huu_rebin
+shapes Hgg      * output.root hist_Hgg_rebin
+shapes Htautau  * output.root hist_Htautau_rebin
+shapes HWW      * output.root hist_HWW_rebin
+shapes HZZ      * output.root hist_HZZ_rebin
+shapes qqH      * output.root hist_qqH_rebin
+shapes WW       * output.root hist_WW_rebin
+shapes ZZ       * output.root hist_ZZ_rebin
+shapes Zqq      * output.root hist_Zqq_rebin
+shapes data_obs * output.root hist_Hbb_rebin
+---------------
+---------------
+#bin            bin1
+observation     -1
+------------------------------
+bin          bin1 bin1 bin1 bin1 bin1 bin1 bin1 bin1 bin1 bin1 bin1 bin1 bin1
+process      Hbb Hcc Hss Hdd Huu Hgg Htautau HWW HZZ qqH WW ZZ Zqq
+process      0   -1  -2  -3  -4  -5   -6      1   2   3  4  5   6
+rate         -1  -1  -1  -1  -1  -1   -1     -1  -1  -1 -1 -1  -1
+--------------------------------
+#bkg lnU      -              1.5
+#HWW_norm rateParam bin1 WW 1
+#ZZ_norm rateParam bin1 ZZ 1
+#Zqq_norm rateParam bin1 Zqq 1
+Zqq_norm lnN - - - - - - - - - - - - 1.05
+ZZ_norm lnN - - - - - - - - - - - 1.05 -
+WW_norm lnN - - - - - - - - - - 1.05 - -
+qqH_norm lnN - - - - - - - - - 1.05 - - -
+HZZ_norm lnN - - - - - - - - 1.05 - - - -
+HWW_norm lnN - - - - - - - 1.05 - - - - -
