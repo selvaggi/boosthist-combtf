@@ -1,5 +1,3 @@
-# Description
-
 This script allows to produce BoostHistograms in N dimensions in MT mode, unroll them in 1D and run combineTF. (credits J. Bendavid, J. Eysermans). After unrolling it is possible to remove empty bins and require either minimum total yield per bin or minimum total MC statistics per bin. 
 
 
