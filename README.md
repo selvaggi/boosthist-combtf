@@ -1,4 +1,4 @@
-## Description
+# Description
 
 This script allows to produce BoostHistograms in N dimensions in MT mode, unroll them in 1D and run combineTF. (credits J. Bendavid, J. Eysermans). After unrolling it is possible to remove empty bins and require either minimum total yield per bin or minimum total MC statistics per bin. 
 
@@ -39,9 +39,9 @@ singularity run --bind "${PWD}:/mnt/" --bind "${DATADIR}:/mnt/data" "/cvmfs/unpa
 
 arguments: 
 
-```--cfg```: analysis config file, where processes, cuts, and axes for the Ndim boosthist are defined
-```--min-yield```: minimum yield per bin when unrolling in 1D
-```--min-mcstat```: minimum mc stat per bin when unrolling in 1D
+- ```--cfg```: analysis config file, where processes, cuts, and axes for the Ndim boosthist are defined
+- ```--min-yield```: minimum yield per bin when unrolling in 1D
+- ```--min-mcstat```: minimum mc stat per bin when unrolling in 1D
 
 Now run limits using combineTF:
 
@@ -62,11 +62,11 @@ python template_and_limits.py --datadir ${DATADIR} --anacfg config/config_zhvvjj
 
 arguments: 
 
-```--datadir```: where flattuples are located
-```--cfg```: analysis config file, where processes, cuts, and axes for the Ndim boosthist are defined
-```--datacard```: combine datacard
-```--min-yield```: minimum yield per bin when unrolling in 1D
-```--min-mcstat```: minimum mc stat per bin when unrolling in 1D
-```--tag```: a string to indentify the job
+- ```--datadir```: where flattuples are located
+- ```--cfg```: analysis config file, where processes, cuts, and axes for the Ndim boosthist are defined
+- ```--datacard```: combine datacard
+- ```--min-yield```: minimum yield per bin when unrolling in 1D
+- ```--min-mcstat```: minimum mc stat per bin when unrolling in 1D
+- ```--tag```: a string to indentify the job
 
 
