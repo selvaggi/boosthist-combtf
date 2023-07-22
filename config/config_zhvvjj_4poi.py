@@ -3,11 +3,7 @@ import hist
 from collections import OrderedDict
 
 debug = False
-name = "zhvvjj"
-homeDir = "/afs/cern.ch/work/s/selvaggi/private/FCCSW-ee/analysis/ee_zh_vvjj/combine_boost/"
-homeDir = "/tmp/"
 dataDir = "/mnt/data/"
-outputDir = "{}/output_{}".format(homeDir, name)
 lumi = 5e6
 
 
@@ -115,7 +111,7 @@ for d in datasets:
     if "name" in d:
         procs.append(d["name"])
 
-var="ip"
+var="res"
 scale = 1.0
 
 label = "{}{}".format(var, scale).replace(".".format(dataDir),"p")

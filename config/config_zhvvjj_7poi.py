@@ -3,13 +3,13 @@ import hist
 from collections import OrderedDict
 
 debug = False
-name = "zhvvjj"
-homeDir = "/afs/cern.ch/work/s/selvaggi/private/FCCSW-ee/analysis/ee_zh_vvjj/combine_boost/"
-homeDir = "/tmp/"
 dataDir = "/mnt/data/"
-outputDir = "{}/output_{}".format(homeDir, name)
 lumi = 5e6
 
+# nunuH
+# xsec = 0.046191
+
+# Higgs FCNCs BRs comes from https://arxiv.org/pdf/1506.02718.pdf
 
 #### list of processes and respective variables/ranges and cross sections
 Hbb = {
@@ -41,24 +41,24 @@ Huu = {
 Hbs = {
     "name": "Hbs",
     "datadir": "{}/wzp6_ee_nunuH_Hbs_ecm240".format(dataDir),
-    "xsec": 1e-10,
+    "xsec": 0.046191 * 2.92e-07,
 }
 
 Hbd = {
     "name": "Hbd",
     "datadir": "{}/wzp6_ee_nunuH_Hbd_ecm240".format(dataDir),
-    "xsec": 1e-12,
+    "xsec": 0.046191 * 1.14e-08,
 }
 Hsd = {
     "name": "Hsd",
     "datadir": "{}/wzp6_ee_nunuH_Hsd_ecm240".format(dataDir),
-    "xsec": 1e-19,
+    "xsec": 0.046191 * 1.2e-08,
 }
 
 Hcu = {
     "name": "Hcu",
     "datadir": "{}/wzp6_ee_nunuH_Hcu_ecm240".format(dataDir),
-    "xsec": 1e-14,
+    "xsec": 0.046191 * 5.31e-015,
 }
 
 Hgg = {

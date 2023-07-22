@@ -11,9 +11,8 @@ def clean_environment_variables(variables):
 
 def compute_limits(datadir, anacfg, datacard, mcstat_min, ymin,tag):
     # Define the paths to the directories you want to bind
-    WORKDIR = (
-        "/afs/cern.ch/work/s/selvaggi/private/FCCSW-ee/analysis/ee_zh_vvjj"
-    )
+    WORKDIR = os.getcwd()
+    
     DATA = datadir
     IMAGE_PATH = "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/bendavid/cmswmassdocker/wmassdevrolling:latest"
 
@@ -32,7 +31,7 @@ def compute_limits(datadir, anacfg, datacard, mcstat_min, ymin,tag):
     )
 
     # Run the Singularity container and execute the desired command inside it
-    singularity_command = """singularity run --bind "{}:/mnt/ee_zh_vvjj" --bind "{}:/mnt/data" "{}" /bin/bash -c 'source /mnt/ee_zh_vvjj/combine_boost/setup.sh; python /mnt/ee_zh_vvjj/combine_boost/boosthist.py --cfg /mnt/ee_zh_vvjj/combine_boost/{}  --mcstatmin {} --min-yield {}' """.format(
+    singularity_command = """singularity run --bind "{}:/mnt/" --bind "{}:/mnt/data" "{}" /bin/bash -c 'source /mnt/setup.sh; python /mnt/boosthist.py --cfg /mnt/{}  --min-mcstat {} --min-yield {}' """.format(
         WORKDIR, DATA, IMAGE_PATH, ANACFG, MCSTATMIN, YMIN_ARG
     )
 
@@ -69,9 +68,17 @@ def compute_limits(datadir, anacfg, datacard, mcstat_min, ymin,tag):
 
     basedatacard = os.path.basename(datacard)
 
+    """
     combine_command = "rm -rf {}; mkdir -p {}; cp {} {}/output.root;  cp {} {}; text2hdf5.py {}/{} -o {}/card.hdf5 --X-allow-no-signal --X-allow-no-background; combinetf.py {}/card.hdf5 -o {}/{} -t -1 --binByBinStat --expectSignal=1".format(jobname, jobname,
         template_root_file, jobname, datacard, jobname, jobname, basedatacard, jobname, jobname, jobname, root_fitresult
     )
+    """
+    
+    
+    combine_command = "rm -rf {}; mkdir -p {}; cp {} {}/output.root;  cp {} {}; cd {}; text2hdf5.py {} -o card.hdf5 --X-allow-no-signal --X-allow-no-background; combinetf.py card.hdf5 -o {} -t -1 --binByBinStat --expectSignal=1".format(jobname, jobname,
+        template_root_file, jobname, datacard, jobname, jobname, basedatacard, root_fitresult
+    )
+   
 
     print("")
     print("now run combine: ")

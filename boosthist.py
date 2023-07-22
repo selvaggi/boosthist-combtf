@@ -39,9 +39,10 @@ parser.add_argument("--nThreads", type=int, help="number of threads", default=No
 parser.add_argument("--min-yield", dest="min_yield", type=float, required=True, help="")
 
 parser.add_argument("--min-mcstat", dest="min_mcstat", type=float, required=True, help="")
-
+parser.add_argument("--tag", dest="tag", type=str, required=True, help="")
 
 args = parser.parse_args()
+tag = args.tag
 
 ## require to run boost histogram in mt mode
 functions.set_threads(args)
@@ -364,8 +365,9 @@ if __name__ == "__main__":
     print("nbins total = {:.2e}".format(nbins))
     """
     ## create output directory
-    if not os.path.exists(config.outputDir):
-        os.makedirs(config.outputDir)
+    jobdir = "/tmp/{}/".format(tag)
+    if not os.path.exists(jobdir):
+        os.makedirs(jobdir)
 
     ## create label
     label = "templates"
@@ -377,7 +379,7 @@ if __name__ == "__main__":
 
     print("job label: {}".format(label))
 
-    h5fname = "{}/{}.hdf5".format(config.outputDir, label)
+    h5fname = "{}/{}.hdf5".format(jobdir, label)
 
     ## fill N dim histos if not done already
     """
@@ -404,8 +406,10 @@ if __name__ == "__main__":
         lumi=config.lumi,
     )
 
-    rfname = "{}/{}.root".format(config.outputDir, label)
-    rfname_rebin = "{}/{}_rebin.root".format(config.outputDir, label)
+    rfname = "{}/{}.root".format(jobdir, label)
+    rfname_rebin = "{}/{}_rebin.root".format(jobdir, label)
+
+    os.system("rm -rf {} {}".format(rfname, rfname_rebin))
 
     ###########################################################################
     ## filling root with raw 1D histograms
@@ -474,9 +478,6 @@ if __name__ == "__main__":
     ## until only yield > min_value found in each bin
     ###########################################################################
 
-    if args.min_yield == 0 and args.min_mcstat == 0:
-        print("no rebinning applied.")
-        sys.exit()
 
     print("summing hists ...")
 
