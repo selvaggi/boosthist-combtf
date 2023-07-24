@@ -27,7 +27,7 @@ In a new shell source environment:
 To run the ```templates.py``` script to produce unrolled 1D template histograms with ```HistoBoost``` within the singularity image:
 
 ```shell
-python template.py  --datadir /eos/experiment/fcc/ee/analyses/case-studies/higgs/flat_trees/zh_vvjj_var_v3 --cfg config/config_zhvvjj_4poi.py --min-yield 0.0 --min-mcstat 1.0 --tag vvjj_4poi
+python template.py  --datadir /eos/experiment/fcc/ee/analyses/case-studies/higgs/flat_trees/zh_vvjj_var_v3 --cfg config/config/config_zhvvjj_13poi.py --min-yield 0.0 --min-mcstat 1.0 --tag vvjj_13poi
 ```
 
 arguments: 
@@ -37,13 +37,15 @@ arguments:
 - ```--min-yield```: minimum yield per bin when unrolling in 1D
 - ```--min-mcstat```: minimum mc stat per bin when unrolling in 1D
 
+This script will also generate a combine datacard in the job directory. 
+
 Now run limits using combineTF:
 
 ```shell
-python limits.py  --datacard datacards/card_zhvvjj_4poi.txt --tag vvjj_4poi
+python limits.py  --datacard job_vvjj_13poi/datacard.txt --tag vvjj_13poi
 ```
 
 arguments: 
 
-- ```--datadir```: where flattuples are located
+- ```--datacard```: where the datacard is located (by default will take the one present in the job dir)
 - ```--tag```: a string to indentify the job (has to be the same as in the ```template.py``` script)

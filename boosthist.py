@@ -38,7 +38,9 @@ parser.add_argument("--nThreads", type=int, help="number of threads", default=No
 ## only applied if rebin
 parser.add_argument("--min-yield", dest="min_yield", type=float, required=True, help="")
 
-parser.add_argument("--min-mcstat", dest="min_mcstat", type=float, required=True, help="")
+parser.add_argument(
+    "--min-mcstat", dest="min_mcstat", type=float, required=True, help=""
+)
 parser.add_argument("--tag", dest="tag", type=str, required=True, help="")
 
 args = parser.parse_args()
@@ -53,6 +55,79 @@ procs = config.procs
 axes = config.axes
 defines = config.defines
 presel = config.presel
+
+jobdir = "/tmp/{}/".format(tag)
+if not os.path.exists(jobdir):
+    os.makedirs(jobdir)
+
+# ______________________________________________________________________________
+def build_datacard():
+
+    datasets = config.datasets
+    print(datasets)
+
+    with open("{}/datacard.txt".format(jobdir), "w") as file:
+
+        # file.write('\n')
+        file.write("imax *\n")
+        file.write("jmax *\n")
+        file.write("kmax *\n")
+        file.write("---------------\n")
+        for d in datasets:
+            file.write(
+                "shapes {}      * output.root hist_{}_rebin\n".format(
+                    d["name"], d["name"]
+                )
+            )
+        file.write(
+            "shapes data_obs * output.root hist_{}_rebin\n".format(datasets[0]["name"])
+        )
+        file.write("---------------\n")
+        file.write("---------------\n")
+        file.write("observation     -1\n")
+        file.write("------------------------------\n")
+        bin_cmd = "bin        "
+        process1_cmd = "process    "
+        process2_cmd = "process    "
+        rate_cmd = "rate       "
+        nsig = 1
+        nbkg = 0
+        for d in datasets:
+            bin_cmd += " bin1"
+            process1_cmd += " {}".format(d["name"])
+            rate_cmd += " -1"
+            if d["isSignal"]:
+                nsig += -1
+                process2_cmd += " {}".format(nsig)
+            else:
+                nbkg += 1
+                process2_cmd += " {}".format(nbkg)
+
+        bin_cmd += "\n"
+        process1_cmd += "\n"
+        process2_cmd += "\n"
+        rate_cmd += "\n"
+
+        file.write(bin_cmd)
+        file.write(process1_cmd)
+        file.write(process2_cmd)
+        file.write(rate_cmd)
+        file.write("------------------------------\n")
+
+        for d in datasets:
+            if not d["isSignal"]:
+                syst_cmd = "{}_norm lnN ".format(d["name"])
+                for d2 in datasets:
+                    if d2 == d:
+                        syst_cmd += "1.10 "
+                    else:
+                        syst_cmd += "- "
+                syst_cmd += "\n"
+                file.write(syst_cmd)
+
+    print("")
+    print("datacard written in {}/datacard.txt".format(jobdir))
+    print("")
 
 
 # ______________________________________________________________________________
@@ -123,8 +198,12 @@ def th1_to_numpy(hist):
     binerr_contents = np.zeros(n_bins)
 
     for i in range(n_bins):
-        bin_contents[i] = hist.GetBinContent(i + 1)  # Note: Bin numbering starts from 1 in ROOT
-        binerr_contents[i] = hist.GetBinError(i + 1)  # Note: Bin numbering starts from 1 in ROOT
+        bin_contents[i] = hist.GetBinContent(
+            i + 1
+        )  # Note: Bin numbering starts from 1 in ROOT
+        binerr_contents[i] = hist.GetBinError(
+            i + 1
+        )  # Note: Bin numbering starts from 1 in ROOT
 
     return bin_contents, binerr_contents
 
@@ -261,7 +340,9 @@ def perform_operations(chunk, arrin, arrin_raw, min_value, min_mc_value):
 # ______________________________________________________________________________
 
 
-def apply_rebinning(chunks, splitted_sum_np_hist, splitted_recorded_operations, available_cpus):
+def apply_rebinning(
+    chunks, splitted_sum_np_hist, splitted_recorded_operations, available_cpus
+):
     global chunks_hist, splitted_sum_np_rebinned
     chunks_hist, splitted_sum_np_rebinned = [], []
     debug = False
@@ -308,7 +389,8 @@ def apply_rebinning(chunks, splitted_sum_np_hist, splitted_recorded_operations, 
                 len(sum_np_rebinned),
                 np.sum(splitted_sum_np_hist[m]),
                 np.sum(splitted_sum_np_rebinned[chunks_hist.index(m)]),
-                np.sum(splitted_sum_np_hist[m]) - np.sum(splitted_sum_np_rebinned[chunks_hist.index(m)]),
+                np.sum(splitted_sum_np_hist[m])
+                - np.sum(splitted_sum_np_rebinned[chunks_hist.index(m)]),
             )
 
     return sum_np_rebinned
@@ -357,17 +439,7 @@ if __name__ == "__main__":
     ## start by filling N dim boosted histograms
     ###########################################################################
 
-    """
-    nbins = 1
-    for nb in args.Nbins:
-        nbins *= nb
-
-    print("nbins total = {:.2e}".format(nbins))
-    """
-    ## create output directory
-    jobdir = "/tmp/{}/".format(tag)
-    if not os.path.exists(jobdir):
-        os.makedirs(jobdir)
+    build_datacard()
 
     ## create label
     label = "templates"
@@ -478,7 +550,6 @@ if __name__ == "__main__":
     ## until only yield > min_value found in each bin
     ###########################################################################
 
-
     print("summing hists ...")
 
     sum_hist = sum_histograms(rhists)
@@ -520,8 +591,15 @@ if __name__ == "__main__":
     min_yield_value = args.min_yield
     min_mc_value = args.min_mcstat
 
-    chunks, splitted_sum_np_rebinned, splitted_sumraw_np_rebinned, splitted_recorded_operations = [], [], [], []
-    for chunk, (sub_hist, sub_histraw) in enumerate(zip(splitted_sum_np, splitted_sumraw_np)):
+    (
+        chunks,
+        splitted_sum_np_rebinned,
+        splitted_sumraw_np_rebinned,
+        splitted_recorded_operations,
+    ) = ([], [], [], [])
+    for chunk, (sub_hist, sub_histraw) in enumerate(
+        zip(splitted_sum_np, splitted_sumraw_np)
+    ):
         thread = Thread(
             target=perform_operations,
             args=(chunk, sub_hist, sub_histraw, min_yield_value, min_mc_value),
@@ -546,8 +624,12 @@ if __name__ == "__main__":
     # Append arrays one after the other
     for m in range(available_cpus):
         ##
-        sum_np_rebinned = np.concatenate((sum_np_rebinned, splitted_sum_np_rebinned[chunks.index(m)]))
-        sumraw_np_rebinned = np.concatenate((sumraw_np_rebinned, splitted_sumraw_np_rebinned[chunks.index(m)]))
+        sum_np_rebinned = np.concatenate(
+            (sum_np_rebinned, splitted_sum_np_rebinned[chunks.index(m)])
+        )
+        sumraw_np_rebinned = np.concatenate(
+            (sumraw_np_rebinned, splitted_sumraw_np_rebinned[chunks.index(m)])
+        )
 
         if config.debug:
             print(
@@ -556,7 +638,8 @@ if __name__ == "__main__":
                 len(sum_np_rebinned),
                 np.sum(splitted_sum_np[m]),
                 np.sum(splitted_sum_np_rebinned[chunks.index(m)]),
-                np.sum(splitted_sum_np[m]) - np.sum(splitted_sum_np_rebinned[chunks.index(m)]),
+                np.sum(splitted_sum_np[m])
+                - np.sum(splitted_sum_np_rebinned[chunks.index(m)]),
             )
 
     if 1:
@@ -564,10 +647,20 @@ if __name__ == "__main__":
         print("initial array: ", len(sum_np))
         print("final array:", len(sum_np_rebinned))
         print("final array (raw):", len(sumraw_np_rebinned))
-        print("check sum diff events after rebin: {}".format(np.sum(sum_np) - np.sum(sum_np_rebinned)))
+        print(
+            "check sum diff events after rebin: {}".format(
+                np.sum(sum_np) - np.sum(sum_np_rebinned)
+            )
+        )
 
     ## make a final pass on the merged chunks
-    perform_operations(available_cpus, sum_np_rebinned, sumraw_np_rebinned, min_yield_value, min_mc_value)
+    perform_operations(
+        available_cpus,
+        sum_np_rebinned,
+        sumraw_np_rebinned,
+        min_yield_value,
+        min_mc_value,
+    )
 
     sum_np_rebinned = splitted_sum_np_rebinned[-1]
     sumraw_np_rebinned = splitted_sumraw_np_rebinned[-1]
@@ -583,7 +676,11 @@ if __name__ == "__main__":
         print("initial array: ", len(sum_np))
         print("final array:", len(sum_np_rebinned))
         print("final array (raw):", len(sumraw_np_rebinned))
-        print("check sum diff events after rebin: {}".format(np.sum(sum_np) - np.sum(sum_np_rebinned)))
+        print(
+            "check sum diff events after rebin: {}".format(
+                np.sum(sum_np) - np.sum(sum_np_rebinned)
+            )
+        )
 
     ## now apply same transformation to individual proccesses
     rhists_rebin = []
@@ -615,7 +712,11 @@ if __name__ == "__main__":
         splitted_sum_np_hist = np.array_split(proc_nozeroes_np, available_cpus)
         splitted_sumerr_np_hist = np.array_split(procerr_nozeroes_np, available_cpus)
 
-        print("rebinning on {} until reach {} events per bin ".format(h.GetName(), min_yield_value))
+        print(
+            "rebinning on {} until reach {} events per bin ".format(
+                h.GetName(), min_yield_value
+            )
+        )
 
         sum_np_rebinned = apply_rebinning(
             chunks,
@@ -647,7 +748,11 @@ if __name__ == "__main__":
             )
 
         ## now filling rebinned histograms
-        print("removed {} bin after rebinning".format(len(proc_nozeroes_np) - len(sum_np_rebinned)))
+        print(
+            "removed {} bin after rebinning".format(
+                len(proc_nozeroes_np) - len(sum_np_rebinned)
+            )
+        )
 
         """
         #sum_np_rebinned = proc_np
@@ -664,7 +769,9 @@ if __name__ == "__main__":
         for iBin in range(0, nbins):
             rhist.SetBinContent(iBin + 1, sum_np_rebinned[iBin])
             rhist.SetBinError(iBin + 1, sumerr_np_rebinned[iBin])
-        print("final number of bins in {}: {}".format(hname + "_rebin", rhist.GetNbinsX()))
+        print(
+            "final number of bins in {}: {}".format(hname + "_rebin", rhist.GetNbinsX())
+        )
 
         rhists_rebin.append(rhist)
 
