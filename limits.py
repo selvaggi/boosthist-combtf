@@ -41,10 +41,12 @@ if __name__ == "__main__":
         datacard = "{}/datacard.txt".format(jobname)
         
     conflicting_variables = ["PYTHONPATH", "LD_LIBRARY_PATH"]
+    #conflicting_variables = ["PYTHONPATH"]
     clean_environment_variables(conflicting_variables)
 
-    combine_command = "cd CMSSW_10_6_20 && eval `scramv1 runtime -sh` && cd ..; cp {} {}; cd {}; text2hdf5.py {} -o card.hdf5 --X-allow-no-signal --X-allow-no-background; combinetf.py card.hdf5 -o {} -t -1 --binByBinStat --expectSignal=1".format(datacard, jobname, jobname, basedatacard, root_fitresult
+    combine_command = "cd CMSSW_10_6_20 && eval `scramv1 runtime -sh` && cd ..; cp {} {}/datacard.txt; cd {}; text2hdf5.py  --X-allow-no-signal --X-allow-no-background datacard.txt -o card.hdf5; combinetf.py card.hdf5 -o {} -t -1 --binByBinStat --expectSignal=1".format(datacard, jobname, jobname, root_fitresult
     )
+
     print("")
     print("run combine TF command: ")
     print("")

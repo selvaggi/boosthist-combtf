@@ -28,40 +28,40 @@ Hss = {
 Hdd = {
     "name": "Hdd",
     "datadir": "{}/wzp6_ee_nunuH_Hdd_ecm240_score_13classes_v1".format(dataDir),
-    "xsec": 9.702e-09,
+    "xsec": 5.5e-07*0.04620,
     "isSignal": True,
 }
 
 Huu = {
     "name": "Huu",
     "datadir": "{}/wzp6_ee_nunuH_Huu_ecm240_score_13classes_v1".format(dataDir),
-    "xsec": 4.158e-09,
+    "xsec": 1.2e-07*0.04620,
     "isSignal": True,
 }
 Hbs = {
     "name": "Hbs",
     "datadir": "{}/wzp6_ee_nunuH_Hbs_ecm240_score_13classes_v1".format(dataDir),
-    "xsec": 8.9e-08,
+    "xsec": 8.9e-09*0.04620,
     "isSignal": True,
 }
 
 Hbd = {
     "name": "Hbd",
     "datadir": "{}/wzp6_ee_nunuH_Hbd_ecm240_score_13classes_v1".format(dataDir),
-    "xsec": 3.8e-09,
+    "xsec": 3.8e-09*0.04620,
     "isSignal": True,
 }
 Hsd = {
     "name": "Hsd",
     "datadir": "{}/wzp6_ee_nunuH_Hsd_ecm240_score_13classes_v1".format(dataDir),
-    "xsec": 1.2e-08,
+    "xsec": 1.9e-15*0.04620,
     "isSignal": True,
 }
 
 Hcu = {
     "name": "Hcu",
     "datadir": "{}/wzp6_ee_nunuH_Hcu_ecm240_score_13classes_v1".format(dataDir),
-    "xsec": 2.7e-20,
+    "xsec": 2.7e-20*0.04620,
     "isSignal": True,
 }
 
@@ -177,7 +177,7 @@ categories = {
 categories = dict()
 for d in datasets:
     if d["isSignal"]:
-        categories[d["name"]] = {"formula": d["name"], "bounds": [-999, 1.0, 999]}
+        categories[d["name"]] = {"formula": d["name"], "bounds": [-999, -1.0, 0.0, 1.0, 999]}
 
 """
 categories["Hbb"]["bounds"] = [-999, -5, -1.5, 0.5, 2, 999]

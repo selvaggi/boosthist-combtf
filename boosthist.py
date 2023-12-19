@@ -57,9 +57,11 @@ defines = config.defines
 presel = config.presel
 
 jobdir = "/tmp/{}/".format(tag)
+print(jobdir)
 if not os.path.exists(jobdir):
+    print("here1")
     os.makedirs(jobdir)
-
+print("here2")
 # ______________________________________________________________________________
 def build_datacard():
 

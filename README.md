@@ -27,7 +27,7 @@ In a new shell source environment:
 To run the ```templates.py``` script to produce unrolled 1D template histograms with ```HistoBoost``` within the singularity image:
 
 ```shell
-python template.py  --datadir /eos/experiment/fcc/ee/analyses/case-studies/higgs/flat_trees/zh_vvjj_var_v3 --cfg config/config/config_zhvvjj_13poi.py --min-yield 0.0 --min-mcstat 1.0 --tag vvjj_13poi
+python template.py  --datadir /eos/experiment/fcc/ee/analyses/case-studies/higgs/flat_trees/zh_vvjj_var_v3 --cfg config/config_zhvvjj_13poi.py --min-yield 0.0 --min-mcstat 1.0 --tag vvjj_13poi
 ```
 
 arguments: 
